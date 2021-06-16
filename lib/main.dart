@@ -1,49 +1,48 @@
-import 'dart:developer';
-
-import 'package:blocpattern/presentation/router/app_router.dart';
-import 'package:blocpattern/presentation/screens/home_screen.dart';
-import 'package:blocpattern/presentation/screens/second_screen.dart';
-import 'package:blocpattern/presentation/screens/third_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'logic/cubit/counter_cubit.dart';
+import 'package:flutter_bloc_concepts/logic/cubit/counter_cubit.dart';
+import 'package:flutter_bloc_concepts/presentation/router/app_router.dart';
+
 import 'logic/cubit/internet_cubit.dart';
 
 void main() {
-  runApp(MyApp(appRouter: AppRouter(),connectivity: Connectivity(),));
+  runApp(MyApp(
+    appRouter: AppRouter(),
+    connectivity: Connectivity(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
   final AppRouter appRouter;
   final Connectivity connectivity;
 
-  MyApp({
+  const MyApp({
     Key key,
     @required this.appRouter,
     @required this.connectivity,
-  }):super(key:key);
+  }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext myAppContext) {
     return MultiBlocProvider(
-      providers:[
-        BlocProvider<InternetCubit>(create:(context)=>InternetCubit(connectivity: connectivity),
+      providers: [
+        BlocProvider<InternetCubit>(
+          create: (internetCubitContext) =>
+              InternetCubit(connectivity: connectivity),
         ),
-        BlocProvider<CounterCubit>(create:(context)=>CounterCubit(internetCubit: context.read<InternetCubit>()))
-
+        BlocProvider<CounterCubit>(
+          create: (counterCubitContext) => CounterCubit(),
+        ),
       ],
-          child: BlocProvider<CounterCubit>(
-        create: (context) => CounterCubit(),
-        child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          onGenerateRoute: appRouter.onGenerateRoute,
-          // home: HomeScreen(title: 'Flutter Demo Home Page'),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
+        onGenerateRoute: appRouter.onGenerateRoute,
       ),
     );
   }
